@@ -127,6 +127,14 @@ def powerset(s):
         )
     ]
 
+def gen_counter(person, one_gene, two_genes):
+    counter = 0
+
+    if person in one_gene:
+        counter = 1
+    elif person in two_genes:
+        counter = 2
+    return counter
 
 def joint_probability(people, one_gene, two_genes, have_trait):
     """
@@ -139,6 +147,12 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
+
+    for person in people:
+        genes = gen_counter(person, one_gene, two_genes)
+
+        
+
     raise NotImplementedError
 
 
