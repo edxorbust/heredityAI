@@ -147,10 +147,15 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-
+    probability = 1
     for person in people:
         genes = gen_counter(person, one_gene, two_genes)
-
+        if person in one_gene:
+            if people[person]["mother"] == None:
+                probability *= PROBS["gene"][1]
+            else:
+                pass
+            
         
 
     raise NotImplementedError
