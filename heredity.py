@@ -127,14 +127,16 @@ def powerset(s):
         )
     ]
 
-def gen_counter(person, one_gene, two_genes):
-    counter = 0
-
-    if person in one_gene:
-        counter = 1
-    elif person in two_genes:
-        counter = 2
-    return counter
+def gen_counter(people, one_gene, two_genes):
+    prob_pass = dict()
+    for person in people:
+        if person in one_gene:
+            prob_pass[person] = 0.5 - PROBS["mutation"]
+        elif person in two_genes:
+            prob_pass[person] = 1 - PROBS["mutation"]
+        else:
+            prob_pass[person] = PROBS["mutation"]
+    return prob_pass
 
 def joint_probability(people, one_gene, two_genes, have_trait):
     """
@@ -148,13 +150,15 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone not in set` have_trait` does not have the trait.
     """
     probability = 1
+    prob_pass = gen_counter(people, one_gene, two_genes)
     for person in people:
-        genes = gen_counter(person, one_gene, two_genes)
         if person in one_gene:
             if people[person]["mother"] == None:
                 probability *= PROBS["gene"][1]
             else:
-                pass
+                probability *= (prob_pass[people[person]["mother"]] * (prob_pass[people[person]["father"]] - PROBS["mutation"]) + prob_pass[people[person]["father"]] * (prob_pass[people[person]["mother"]]))
+            
+                
             
         
 
