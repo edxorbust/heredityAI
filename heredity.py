@@ -131,11 +131,11 @@ def gen_counter(people, one_gene, two_genes):
     prob_pass = dict()
     for person in people:
         if person in one_gene:
-            prob_pass[person] = 0.5 - PROBS["mutation"]
+            prob_pass[person] = {0.5 - PROBS["mutation"], 1 - (0.5 - PROBS["mutation"])}
         elif person in two_genes:
-            prob_pass[person] = 1 - PROBS["mutation"]
+            prob_pass[person] = {1 - PROBS["mutation"], 1 - (1 - PROBS["mutation"])}
         else:
-            prob_pass[person] = PROBS["mutation"]
+            prob_pass[person] = {PROBS["mutation"] , 1 - PROBS["mutation"]}
     return prob_pass
 
 def joint_probability(people, one_gene, two_genes, have_trait):
