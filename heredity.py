@@ -127,16 +127,26 @@ def powerset(s):
         )
     ]
 
-def gen_counter(people, one_gene, two_genes):
+def gen_prob(people, one_gene, two_genes):
     prob_pass = dict()
     for person in people:
         if person in one_gene:
-            prob_pass[person] = {0.5 - PROBS["mutation"], 1 - (0.5 - PROBS["mutation"])}
+            prob_pass[person] = (0.5 - PROBS["mutation"], 1 - (0.5 - PROBS["mutation"]))
         elif person in two_genes:
-            prob_pass[person] = {1 - PROBS["mutation"], 1 - (1 - PROBS["mutation"])}
+            prob_pass[person] = (1 - PROBS["mutation"], 1 - (1 - PROBS["mutation"]))
         else:
-            prob_pass[person] = {PROBS["mutation"] , 1 - PROBS["mutation"]}
+            prob_pass[person] = (PROBS["mutation"] , 1 - PROBS["mutation"])
     return prob_pass
+
+def gen_counter(person, one_gene, two_genes):
+    genes = 0
+    if person in one_gene:
+        genes = 1
+        return genes
+    if person in two_genes:
+        genes = 2
+        return genes
+    return genes
 
 def joint_probability(people, one_gene, two_genes, have_trait):
     """
@@ -150,19 +160,32 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone not in set` have_trait` does not have the trait.
     """
     probability = 1
-    prob_pass = gen_counter(people, one_gene, two_genes)
+    prob_pass = gen_prob(people, one_gene, two_genes)
     for person in people:
         if person in one_gene:
             if people[person]["mother"] == None:
                 probability *= PROBS["gene"][1]
             else:
-                probability *= (prob_pass[people[person]["mother"]] * (prob_pass[people[person]["father"]] - PROBS["mutation"]) + prob_pass[people[person]["father"]] * (prob_pass[people[person]["mother"]]))
-            
-                
-            
+                probability *= ((prob_pass[people[person]["mother"]][0] * prob_pass[people[person]["father"]][1]) + (prob_pass[people[person]["father"]][0] * prob_pass[people[person]["mother"]][1]))
+        elif person in two_genes:
+            if people[person]["mother"] == None:
+                probability *= PROBS["gene"][2]
+            else:
+                probability *= (prob_pass[people[person]["mother"]][0] * prob_pass[people[person]["father"]][0])
+        else:
+            if people[person]["mother"] == None:
+                probability *= PROBS["gene"][0]
+            else:
+                probability *= (prob_pass[people[person]["mother"]][1] * prob_pass[people[person]["father"]][1])
         
+        genes = gen_counter(person, one_gene, two_genes)
+        if person in have_trait:
+            probability *= PROBS["trait"][genes][True]
+        else:
+            probability *= PROBS["trait"][genes][False]
+    
+    return probability
 
-    raise NotImplementedError
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
